@@ -1,0 +1,40 @@
+{
+  "name": "@auth/server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsup --watch --onSuccess \"nodemon dist/index.js\"",
+    "build": "tsup",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "npx prisma generate",
+    "push": "npx prisma db push",
+    "format": "npx prisma format",
+    "migrate": "npx prisma migrate",
+    "resetDb": "npx prisma migrate reset"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.5.0",
+    "unique-username-generator": "^1.4.0",
+    "zod": "^3.25.64"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/nodemailer": "^6.4.17",
+    "tsup": "^8.4.0",
+    "typescript": "^5.5.4"
+  }
+}

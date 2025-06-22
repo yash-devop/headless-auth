@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model App {
+  id      String @id @default(cuid())
+  appName String
+  userId  String // Correct: Foreign key must be a scalar field
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("apps")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique // Optional for OAuth users
+  emailVerified DateTime?
+  image         String?
+  password      String? // Hashed password (nullable for OAuth users)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  apps          App[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String // Foreign key
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime // Renamed from expiryTime (Auth.js standard)
+  userAgent    String?
+  ip           String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String // "oauth" | "email" | "credentials"
+  provider          String // "google", "github", etc.
+  providerAccountId String // Unique ID from provider
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int? // Token expiry timestamp
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text // For OpenID
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model VerificationToken {
+  identifier String // Email or phone
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

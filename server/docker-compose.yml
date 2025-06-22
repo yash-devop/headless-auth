@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    ports:
+      - 5429:5432
+    container_name: auth-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=auth-db
+    restart: always
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+volumes:
+  auth-data:
+    external: false
