@@ -73,11 +73,16 @@ export const ErrorHandler = (
       return;
     }
   }
+  const errorMsg = err?.message
+    ? typeof err?.message === "object"
+      ? JSON.parse(err.message)
+      : err.message
+    : "Something went wrong";
   res.status(500).json({
     error: {
       type: "Internal Server Error",
       code: 500,
-      message: JSON.parse(err.message) || "Something went wrong",
+      message: errorMsg,
     },
     success: false,
   });
