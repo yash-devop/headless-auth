@@ -74,6 +74,14 @@ var authService = {
         emailVerified: null
       }
     });
+    await prisma.account.create({
+      data: {
+        provider: "credentials",
+        providerAccountId: email,
+        userId: newUser.id,
+        type: "credentials"
+      }
+    });
     console.log("newUser", newUser);
     const emailToken = hashToken({ email, userId: newUser.id }, SECRET_KEY, {
       expiresIn: JWT_EXPIRY_MINUTES
@@ -172,7 +180,7 @@ var authService = {
     }
     const updatedUser = await prisma.user.update({
       data: { emailVerified: /* @__PURE__ */ new Date() },
-      where: { email, id: userId }
+      where: { id: userId }
     });
     if (updatedUser.emailVerified) {
       const appName = generateUsername();

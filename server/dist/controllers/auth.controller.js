@@ -1,13 +1,3 @@
-// src/controllers/auth.controller.ts
-import { PrismaClient as PrismaClient2 } from "@prisma/client";
-
-// src/lib/zod/schema.ts
-import { z } from "zod";
-var SignUpSchema = z.object({
-  email: z.string({ message: "Email is required" }).email("Invalid Email").min(1).transform((email) => email.toLowerCase()),
-  password: z.string({ message: "Password is required" }).min(8, "Password must be of 8 characters").max(30, "Password must be less than 30 characters")
-});
-
 // src/lib/auth/jwt.ts
 import jwt from "jsonwebtoken";
 var hashToken = (data, secretKey, signOptions) => {
@@ -55,7 +45,7 @@ var DOMAIN = "http://localhost:5173";
 
 // src/lib/services/auth.service.ts
 import { generateUsername } from "unique-username-generator";
-import { z as z2 } from "zod";
+import { z } from "zod";
 var prisma = new PrismaClient();
 var authService = {
   registerUser: async ({ email, password }) => {
@@ -82,6 +72,14 @@ var authService = {
         email,
         password: hashedPassword,
         emailVerified: null
+      }
+    });
+    await prisma.account.create({
+      data: {
+        provider: "credentials",
+        providerAccountId: email,
+        userId: newUser.id,
+        type: "credentials"
       }
     });
     console.log("newUser", newUser);
@@ -144,7 +142,7 @@ var authService = {
     token,
     userId
   }) => {
-    z2.string().cuid("userId is invalid").parse(userId);
+    z.string().cuid("userId is invalid").parse(userId);
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });
@@ -182,7 +180,7 @@ var authService = {
     }
     const updatedUser = await prisma.user.update({
       data: { emailVerified: /* @__PURE__ */ new Date() },
-      where: { email, id: userId }
+      where: { id: userId }
     });
     if (updatedUser.emailVerified) {
       const appName = generateUsername();
@@ -202,13 +200,20 @@ var authService = {
   }
 };
 
+// src/lib/zod/schema.ts
+import { z as z2 } from "zod";
+var SignUpSchema = z2.object({
+  email: z2.string({ message: "Email is required" }).email("Invalid Email").min(1).transform((email) => email.toLowerCase()),
+  password: z2.string({ message: "Password is required" }).min(8, "Password must be of 8 characters").max(30, "Password must be less than 30 characters")
+});
+
 // src/controllers/auth.controller.ts
-var prisma2 = new PrismaClient2();
 var register = async (req, res) => {
   const user = SignUpSchema.parse(req.body);
   const { password, email } = user;
   const registeredUser = await authService.registerUser({ email, password });
-  return res.json(registeredUser);
+  res.json(registeredUser);
+  return;
 };
 var sendVerificationEmail = async (req, res) => {
   const { email, userId } = req.query;
@@ -216,18 +221,21 @@ var sendVerificationEmail = async (req, res) => {
     email,
     userId
   });
-  return res.json(emailForVerification);
+  res.json(emailForVerification);
+  return;
 };
 var verifyEmail = async (req, res) => {
   const { token, userId } = req.query;
   if (!token) {
-    return res.status(400).json({
+    res.status(400).json({
       message: "Verification token not found!",
       success: false
     });
+    return;
   }
   const response = await authService.verifyEmail({ token, userId });
-  return res.json(response);
+  res.json(response);
+  return;
 };
 export {
   register,

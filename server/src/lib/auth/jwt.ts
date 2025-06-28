@@ -1,4 +1,4 @@
-import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
+import jwt, { DecodeOptions, SignOptions, VerifyOptions } from "jsonwebtoken";
 
 type Token = object | string;
 
@@ -16,4 +16,8 @@ export const verifyToken = (
   verifyOptions?: VerifyOptions
 ) => {
   return jwt.verify(token, secretKey, verifyOptions);
+};
+
+export const decodeToken = (token: string, decodeOptions?: DecodeOptions) => {
+  return jwt.decode(token, decodeOptions);
 };

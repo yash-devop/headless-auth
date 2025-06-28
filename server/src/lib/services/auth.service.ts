@@ -52,6 +52,14 @@ export const authService = {
         emailVerified: null,
       },
     });
+    await prisma.account.create({
+      data: {
+        provider: "credentials",
+        providerAccountId: email,
+        userId: newUser.id,
+        type: "credentials",
+      },
+    });
     console.log("newUser", newUser);
 
     const emailToken = hashToken({ email, userId: newUser.id }, SECRET_KEY, {
@@ -168,7 +176,7 @@ export const authService = {
     // Update emailVerified
     const updatedUser = await prisma.user.update({
       data: { emailVerified: new Date() },
-      where: { email, id: userId },
+      where: { id: userId },
     });
 
     if (updatedUser.emailVerified) {
