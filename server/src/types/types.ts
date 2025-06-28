@@ -1,7 +1,7 @@
-import { SignUpSchema } from "@/lib/zod/schema";
+import { AuthSchema } from "@/lib/zod/schema";
 import { z } from "zod";
 
-type User = z.infer<typeof SignUpSchema>;
+type User = z.infer<typeof AuthSchema>;
 
 type GoogleUserProfile = {
   id: string;

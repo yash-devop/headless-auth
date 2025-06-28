@@ -1,10 +1,10 @@
 import { authService } from "@/lib/services/auth.service";
-import { SignUpSchema } from "@/lib/zod/schema";
+import { AuthSchema } from "@/lib/zod/schema";
 import { Request, Response } from "express";
 import { User } from "../types/types";
 
 const register = async (req: Request, res: Response) => {
-  const user: User = SignUpSchema.parse(req.body);
+  const user: User = AuthSchema.parse(req.body);
   const { password, email } = user;
   const registeredUser = await authService.registerUser({ email, password });
 
